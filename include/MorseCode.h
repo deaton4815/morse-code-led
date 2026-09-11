@@ -25,6 +25,6 @@ class MorseCode
         static const uint8_t m_nChars;
 
     public:
-        MorseCode();
+        MorseCode() = default;
         const char* getPattern(char letter) const;
 };
