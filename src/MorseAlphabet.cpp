@@ -1,10 +1,8 @@
-#include "MorseCode.h"
+#include "MorseAlphabet.h"
 
 #include <cstdint>
 
-cont MorseCode::Durations MorseCode::m_durations = { 1, 3, 1, 3, 7 }
-
-const MorseCode::LetterPattern MorseCode::m_charTable[] = {
+const MorseAlphabet::LetterPattern MorseAlphabet::m_charTable[] = {
     {'A', ".-"},    {'B', "-..."},  {'C', "-.-."},  {'D', "-.."},
     {'E', "."},     {'F', "..-."},  {'G', "--."},   {'H', "...."},
     {'I', ".."},    {'J', ".---"},  {'K', "-.-"},   {'L', ".-.."},
@@ -14,9 +12,9 @@ const MorseCode::LetterPattern MorseCode::m_charTable[] = {
     {'Y', "-.--"},  {'Z', "--.."}
 };
 
-const uint8_t MorseCode::m_nChars = sizeof(m_charTable) / sizeof(m_charTable[0]);
+const uint8_t MorseAlphabet::m_nChars = sizeof(m_charTable) / sizeof(m_charTable[0]);
 
-const char*  MorseCode::getPattern(char letter) const 
+const char*  MorseAlphabet::getPattern(char letter) const 
 {
     letter = toupper(static_cast<unsigned char>(letter));
 
