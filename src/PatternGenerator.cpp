@@ -30,6 +30,7 @@ void PatternGenerator::generatePattern(const char* text)
             prev = m_buffer[m_sizeBuffer - 1];
         }
     }
+    generateSpace();
 }
 
 void PatternGenerator::generateLetter(const char* pattern, Symbol prev)

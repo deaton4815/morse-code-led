@@ -1,18 +1,66 @@
 #include <Arduino.h>
 
-// put function declarations here:
-int myFunction(int, int);
+#include "LineReader.h"
+#include "PatternGenerator.h"
 
-void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+namespace
+{
+    LineReader lineReader;
+    PatternGenerator patternGenerator;
+    bool halted = false;
+
+    const char* symbolName(Symbol symbol)
+    {
+        switch (symbol)
+        {
+            case Symbol::Dit:       return "Dit";
+            case Symbol::Dah:       return "Dah";
+            case Symbol::SymbolGap: return "SymbolGap";
+            case Symbol::LetterGap: return "LetterGap";
+            case Symbol::WordGap:   return "WordGap";
+        }
+        return "?";
+    }
+
+    void printPattern(const Symbol* buffer, uint16_t size)
+    {
+        for (uint16_t i = 0; i < size; ++i)
+        {
+            Serial.print(symbolName(buffer[i]));
+
+            if ((i + 1) < size)
+            {
+                Serial.print(' ');
+            }
+        }
+
+        Serial.println();
+    }
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+void setup()
+{
+    Serial.begin(9600);
+    Serial.println("Type text and press Enter for its Morse pattern. Ctrl-Z to quit.");
 }
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+void loop()
+{
+    if (halted)
+    {
+        return;
+    }
+
+    LineStatus status = lineReader.poll();
+
+    if (status == LineStatus::LineReady)
+    {
+        patternGenerator.generatePattern(lineReader.getLine());
+        printPattern(patternGenerator.getBuffer(), patternGenerator.getSizeBuffer());
+    }
+    else if (status == LineStatus::Sentinel)
+    {
+        Serial.println("Exiting.");
+        halted = true;
+    }
 }
