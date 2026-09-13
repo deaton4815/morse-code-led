@@ -2,50 +2,74 @@
 
 #include <cstdint>
 
-class PatternGenerator
+void PatternGenerator::generate(const char* text)
 {
-    private:
+    m_sizeBuffer = 0;
+    generatePattern(text);
+}
 
-        void PatternGenerator::generatePattern(cont char* text)
+void PatternGenerator::generatePattern(const char* text)
+{
+    Symbol prev = Symbol::WordGap;
+
+    for (uint16_t i = 0; text[i] != '\0'; ++i)
+    {
+        char c = text[i];
+
+        const char* pattern = m_alphabet.getPattern(c);
+
+        bool isLetter = nullptr != pattern;
+        bool isSpace = (' ' == c);
+
+        if (isLetter)
         {
-            uint16_t count = 0;
-            Symbol prev = Symbol::WordGap;
-
-            char c;
-            for (uint16_t i = 0; text[i] != '\0'; ++i)
-            {
-                c = text[i];
-                
-                const char* pattern = m_alphabet.getPattern(c);
-                
-                bool isLetter = nullptr != pattern;
-                bool isSpace = ' ' == c;
-                if isLetter { generateLetter(pattern, count, prev); }
-                else if isSpace { generateSpace(count); }
-
-                prev = m_buffer[count-1];
-            }
+            generateLetter(pattern, prev);
+        }
+        else if (isSpace)
+        {
+            generateSpace();
         }
 
-        void PatternGenerator::generateLetter(cont char* pattern, uint16_t count, Symbol prev)
+        if ((isLetter || isSpace) && m_sizeBuffer > 0)
         {
-            bool isNewWord = prev == Symbol::WordGap;
-                for (uint16_t j = 0; pattern[j] != '\0'; ++j)
-                {
-                    if (j == 0) && (!isNewWord)
-                    {
-                        m_buffer[count++] == Symbol::LetterGap;
-                     }
-                    else if (j > 0)
-                    {
-                        m_buffer[count++] = Symbol::SymbolGap;
-                    }
-                    m_buffer[count++] = ('.' == pattern[j]) ? Symbol::Dit : Symbol::Dah;
-                }
+            prev = m_buffer[m_sizeBuffer - 1];
         }
 
-        void PatternGenerator::generateSpace(uint16_t count)
+        if (m_sizeBuffer >= MAX_PATTERN_SYMBOLS-5) { return; }
+    }
+}
+
+void PatternGenerator::generateLetter(const char* pattern, Symbol prev)
+{
+    bool isNewWord = (prev == Symbol::WordGap);
+
+    for (uint16_t j = 0; pattern[j] != '\0'; ++j)
+    {
+
+        if ((j == 0) && (!isNewWord))
         {
-            m_buffer[count++] = Symbol::WordGap;
+            m_buffer[m_sizeBuffer++] = Symbol::LetterGap;
         }
+        else if (j > 0)
+        {
+            m_buffer[m_sizeBuffer++] = Symbol::SymbolGap;
+        }
+
+        m_buffer[m_sizeBuffer++] = ('.' == pattern[j]) ? Symbol::Dit : Symbol::Dah;
+    }
+}
+
+void PatternGenerator::generateSpace()
+{
+    m_buffer[m_sizeBuffer++] = Symbol::WordGap;
+}
+
+Symbol* PatternGenerator::getBuffer()
+{
+    return m_buffer;
+}
+
+uint16_t PatternGenerator::getSizeBuffer() const
+{
+    return m_sizeBuffer;
 }

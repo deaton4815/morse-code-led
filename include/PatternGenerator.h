@@ -1,4 +1,7 @@
-# pragma once
+#pragma once
+
+#include <cstdint>
+
 #include "MorseSymbol.h"
 #include "MorseAlphabet.h"
 
@@ -7,19 +10,21 @@ class PatternGenerator
     private:
 
         static constexpr uint16_t MAX_PATTERN_SYMBOLS = 512;
-        
-        Symbol m_buffer;
+
+        Symbol m_buffer[MAX_PATTERN_SYMBOLS];
         MorseAlphabet m_alphabet;
 
-        uint16_t m_sizeBuffer;
+        uint16_t m_sizeBuffer = 0;
 
         void generatePattern(const char* text);
-        void generateLetter(const char* pattern, uint16_t count, Symbol prev);
-        void generateSpace(uint16_t count)
+        void generateLetter(const char* pattern, Symbol prev);
+        void generateSpace();
 
     public:
         PatternGenerator() = default;
-        
+
+        void generate(const char* text);
+
         Symbol* getBuffer();
-        uint16_t getSizeBuffer();
-}
+        uint16_t getSizeBuffer() const;
+};

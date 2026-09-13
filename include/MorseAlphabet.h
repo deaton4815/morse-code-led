@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-class MorseCode
+class MorseAlphabet
 {
     private:
 
@@ -11,11 +11,11 @@ class MorseCode
             char letter;
             const char* pattern;
         };
-        
-        static const LetterPattern m_charTable;
+
+        static const LetterPattern m_charTable[];
         static const uint8_t m_nChars;
 
     public:
-        MorseCode() = default;
+        MorseAlphabet() = default;
         const char* getPattern(char letter) const;
 };
