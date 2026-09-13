@@ -3,17 +3,7 @@
 #include <cstdint>
 #include <cctype>
 
-const MorseAlphabet::LetterPattern MorseAlphabet::m_charTable[] = {
-    {'A', ".-"},    {'B', "-..."},  {'C', "-.-."},  {'D', "-.."},
-    {'E', "."},     {'F', "..-."},  {'G', "--."},   {'H', "...."},
-    {'I', ".."},    {'J', ".---"},  {'K', "-.-"},   {'L', ".-.."},
-    {'M', "--"},    {'N', "-."},    {'O', "---"},   {'P', ".--."},
-    {'Q', "--.-"},  {'R', ".-."},   {'S', "..."},   {'T', "-"},
-    {'U', "..-"},   {'V', "...-"},  {'W', ".--"},   {'X', "-..-"},
-    {'Y', "-.--"},  {'Z', "--.."}
-};
-
-const char* MorseAlphabet::getPattern(char letter) const
+const char* MorseAlphabet::getPattern(char letter)
 {
     letter = static_cast<char>(toupper(static_cast<unsigned char>(letter)));
 

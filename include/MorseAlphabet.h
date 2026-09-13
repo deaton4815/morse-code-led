@@ -12,10 +12,19 @@ class MorseAlphabet
             const char* pattern;
         };
 
-        static const LetterPattern m_charTable[];
+        static constexpr LetterPattern m_charTable[] = {
+            {'A', ".-"},    {'B', "-..."},  {'C', "-.-."},  {'D', "-.."},
+            {'E', "."},     {'F', "..-."},  {'G', "--."},   {'H', "...."},
+            {'I', ".."},    {'J', ".---"},  {'K', "-.-"},   {'L', ".-.."},
+            {'M', "--"},    {'N', "-."},    {'O', "---"},   {'P', ".--."},
+            {'Q', "--.-"},  {'R', ".-."},   {'S', "..."},   {'T', "-"},
+            {'U', "..-"},   {'V', "...-"},  {'W', ".--"},   {'X', "-..-"},
+            {'Y', "-.--"},  {'Z', "--.."}
+        };
+
         static constexpr uint8_t m_nChars = sizeof(m_charTable) / sizeof(m_charTable[0]);
 
     public:
         MorseAlphabet() = delete;
-        static const char* getPattern(char letter) const;
+        static const char* getPattern(char letter);
 };

@@ -2,9 +2,6 @@
 
 #include <cstdint>
 
-void PatternGenerator::PatternGenerator()
-: m_sizeBuffer(0) {};
-
 void PatternGenerator::generatePattern(const char* text)
 {
     m_sizeBuffer = 0;
@@ -41,7 +38,6 @@ void PatternGenerator::generateLetter(const char* pattern, Symbol prev)
 
     for (uint16_t j = 0; pattern[j] != '\0'; ++j)
     {
-
         if ((j == 0) && (!isNewWord))
         {
             writeSymbol(Symbol::LetterGap);
@@ -50,8 +46,8 @@ void PatternGenerator::generateLetter(const char* pattern, Symbol prev)
         {
             writeSymbol(Symbol::SymbolGap);
         }
-        sym = ('.' == pattern[j]) ? Symbol::Dit : Symbol::Dah;
-        writeSymbol(sym);
+
+        writeSymbol(('.' == pattern[j]) ? Symbol::Dit : Symbol::Dah);
     }
 }
 
@@ -63,6 +59,7 @@ void PatternGenerator::generateSpace()
 void PatternGenerator::writeSymbol(Symbol sym)
 {
     if (m_sizeBuffer >= MAX_PATTERN_SYMBOLS) { return; }
+
     m_buffer[m_sizeBuffer++] = sym;
 }
 
@@ -71,7 +68,7 @@ const Symbol* PatternGenerator::getBuffer() const
     return m_buffer;
 }
 
-const uint16_t PatternGenerator::getSizeBuffer() const
+uint16_t PatternGenerator::getSizeBuffer() const
 {
     return m_sizeBuffer;
 }
