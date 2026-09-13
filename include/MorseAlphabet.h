@@ -13,9 +13,9 @@ class MorseAlphabet
         };
 
         static const LetterPattern m_charTable[];
-        static const uint8_t m_nChars;
+        static constexpr uint8_t m_nChars = sizeof(m_charTable) / sizeof(m_charTable[0]);
 
     public:
-        MorseAlphabet() = default;
-        const char* getPattern(char letter) const;
+        MorseAlphabet() = delete;
+        static const char* getPattern(char letter) const;
 };

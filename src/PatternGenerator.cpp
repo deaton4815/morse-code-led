@@ -2,21 +2,19 @@
 
 #include <cstdint>
 
-void PatternGenerator::generate(const char* text)
-{
-    m_sizeBuffer = 0;
-    generatePattern(text);
-}
+void PatternGenerator::PatternGenerator()
+: m_sizeBuffer(0) {};
 
 void PatternGenerator::generatePattern(const char* text)
 {
+    m_sizeBuffer = 0;
     Symbol prev = Symbol::WordGap;
 
     for (uint16_t i = 0; text[i] != '\0'; ++i)
     {
         char c = text[i];
 
-        const char* pattern = m_alphabet.getPattern(c);
+        const char* pattern = MorseAlphabet::getPattern(c);
 
         bool isLetter = nullptr != pattern;
         bool isSpace = (' ' == c);
@@ -34,8 +32,6 @@ void PatternGenerator::generatePattern(const char* text)
         {
             prev = m_buffer[m_sizeBuffer - 1];
         }
-
-        if (m_sizeBuffer >= MAX_PATTERN_SYMBOLS-5) { return; }
     }
 }
 
@@ -48,28 +44,34 @@ void PatternGenerator::generateLetter(const char* pattern, Symbol prev)
 
         if ((j == 0) && (!isNewWord))
         {
-            m_buffer[m_sizeBuffer++] = Symbol::LetterGap;
+            writeSymbol(Symbol::LetterGap);
         }
         else if (j > 0)
         {
-            m_buffer[m_sizeBuffer++] = Symbol::SymbolGap;
+            writeSymbol(Symbol::SymbolGap);
         }
-
-        m_buffer[m_sizeBuffer++] = ('.' == pattern[j]) ? Symbol::Dit : Symbol::Dah;
+        sym = ('.' == pattern[j]) ? Symbol::Dit : Symbol::Dah;
+        writeSymbol(sym);
     }
 }
 
 void PatternGenerator::generateSpace()
 {
-    m_buffer[m_sizeBuffer++] = Symbol::WordGap;
+    writeSymbol(Symbol::WordGap);
 }
 
-Symbol* PatternGenerator::getBuffer()
+void PatternGenerator::writeSymbol(Symbol sym)
+{
+    if (m_sizeBuffer >= MAX_PATTERN_SYMBOLS) { return; }
+    m_buffer[m_sizeBuffer++] = sym;
+}
+
+const Symbol* PatternGenerator::getBuffer() const
 {
     return m_buffer;
 }
 
-uint16_t PatternGenerator::getSizeBuffer() const
+const uint16_t PatternGenerator::getSizeBuffer() const
 {
     return m_sizeBuffer;
 }

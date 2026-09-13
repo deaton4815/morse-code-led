@@ -13,8 +13,6 @@ const MorseAlphabet::LetterPattern MorseAlphabet::m_charTable[] = {
     {'Y', "-.--"},  {'Z', "--.."}
 };
 
-const uint8_t MorseAlphabet::m_nChars = sizeof(m_charTable) / sizeof(m_charTable[0]);
-
 const char* MorseAlphabet::getPattern(char letter) const
 {
     letter = static_cast<char>(toupper(static_cast<unsigned char>(letter)));
