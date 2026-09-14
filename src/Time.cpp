@@ -36,14 +36,11 @@ uint32_t Time::getTimestampMs() const
 
 void Time::newSymbol(Symbol symbol)
 {
-    m_symbolCompletionMs = getTimestampMs() + getDurationMs(symbol);
+    m_symbolStartMs = getTimestampMs();
+    m_symbolDurationMs = getDurationMs(symbol);
 }
 
-bool Time::isSymbolComplete(Symbol symbol)
+bool Time::isSymbolComplete() const
 {
-    if (getTimestampMs() > m_symbolCompletionMs)
-    {
-        return true;
-    }
-    return false;
+    return (getTimestampMs() - m_symbolStartMs) >= m_symbolDurationMs;
 }

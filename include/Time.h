@@ -21,8 +21,9 @@ class Time
             uint32_t wordGapMs;
         };
         const Durations m_durationsMs;
-        
-        uint32_t m_symbolCompletionMs = 0;
+
+        uint32_t m_symbolStartMs = 0;
+        uint32_t m_symbolDurationMs = 0;
 
         uint32_t getTimestampMs() const;
         uint32_t getDurationMs(Symbol symbol) const;
@@ -31,6 +32,5 @@ class Time
         Time(uint32_t btuMs = 132);
 
         void newSymbol(Symbol symbol);
-        bool isSymbolComplete(Symbol symbol);
-
+        bool isSymbolComplete() const;
 };
