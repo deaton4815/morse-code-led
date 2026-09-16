@@ -1,3 +1,6 @@
+/*
+Morse code symbols
+*/
 #pragma once
 
 #include <cstdint>

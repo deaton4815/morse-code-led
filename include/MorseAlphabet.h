@@ -1,3 +1,6 @@
+/*
+Map characters to Morse code representation
+*/
 #pragma once
 
 #include <cstdint>
@@ -6,12 +9,14 @@ class MorseAlphabet
 {
     private:
 
+        // letter + Morse code data representation
         struct LetterPattern
         {
             char letter;
             const char* pattern;
         };
 
+        // Morse code lookup table
         static constexpr LetterPattern m_charTable[] = {
             {'A', ".-"},    {'B', "-..."},  {'C', "-.-."},  {'D', "-.."},
             {'E', "."},     {'F', "..-."},  {'G', "--."},   {'H', "...."},

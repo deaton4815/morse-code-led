@@ -4,36 +4,41 @@
 
 LineStatus LineReader::poll()
 {
+    // Consumes every byte already sitting in the Serial receive buffer.
+    // Does not wait for bytes that have not arrived
     while (Serial.available() > 0)
     {
         char c = static_cast<char>(Serial.read());
 
+        // Ctrl + Z entered
         if (c == SENTINEL_CHAR)
         {
+            // Discard partial line if sentinel
             m_length = 0;
             return LineStatus::Sentinel;
         }
 
+        // Line terminator
         if ((c == '\n') || (c == '\r'))
         {
             if (m_length == 0)
             {
-                // Swallow a lone terminator (e.g. the '\n' half of a
-                // "\r\n" pair already handled by the '\r') so it doesn't
-                // read as a spurious empty line.
+                // skip reading empty line
                 continue;
             }
 
+            // return line ready with terminating character in buffer for coimpleted line
             m_buffer[m_length] = '\0';
             m_length = 0;
             return LineStatus::LineReady;
         }
 
+        // Add character to buffer
         if (m_length < (MAX_LINE_LENGTH - 1))
         {
             m_buffer[m_length++] = c;
         }
-        // else: silently drop characters beyond MAX_LINE_LENGTH - 1
+        // Drop characters beyond max length
     }
 
     return LineStatus::Pending;
