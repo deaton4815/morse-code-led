@@ -2,44 +2,82 @@
 
 #include "LineReader.h"
 #include "PatternGenerator.h"
+#include "Time.h"
 
+// Anonymous namespace
 namespace
 {
+    constexpr uint8_t LED_PIN = 13;
+
+    // One instance of each class for whole system
     LineReader lineReader;
     PatternGenerator patternGenerator;
-    bool halted = false;
+    Time time;
 
-    const char* symbolName(Symbol symbol)
+    bool halted = false; // true when sentinel
+
+    // Playback state, persisted between loop() calls.
+    bool executingPattern = false; // If a pattern is curruently being displayed
+    uint16_t currentSymbolIndex = 0; // which symbol in buffer is active
+
+    // dit and dah symbols light up LED
+    bool isMarkSymbol(Symbol symbol)
     {
-        switch (symbol)
-        {
-            case Symbol::Dit:       return "Dit";
-            case Symbol::Dah:       return "Dah";
-            case Symbol::SymbolGap: return "SymbolGap";
-            case Symbol::LetterGap: return "LetterGap";
-            case Symbol::WordGap:   return "WordGap";
-        }
-        return "?";
+        return (symbol == Symbol::Dit) || (symbol == Symbol::Dah);
     }
 
-    void printPattern(const Symbol* buffer, uint16_t size)
+    // Starts timing the symbol at the given buffer index
+    //  and drives the LED to match it
+    // Light and the timer always change state together
+    void beginSymbol(uint16_t index)
     {
-        for (uint16_t i = 0; i < size; ++i)
-        {
-            Serial.print(symbolName(buffer[i]));
+        Symbol symbol = patternGenerator.getBuffer()[index];
+        time.newSymbol(symbol);
+        digitalWrite(LED_PIN, isMarkSymbol(symbol) ? HIGH : LOW);
+    }
 
-            if ((i + 1) < size)
-            {
-                Serial.print(' ');
-            }
+    // set up new pattern
+    void beginExecutingPattern()
+    {
+        if (patternGenerator.getSizeBuffer() == 0)
+        {
+            return;
         }
 
-        Serial.println();
+        currentSymbolIndex = 0;
+        beginSymbol(currentSymbolIndex);
+        executingPattern = true;
+    }
+
+    // Called every loop() iteration while a pattern is playing
+    // Advances at most one symbol per call. Does not wait for a symbol to finish
+    void advanceExecutingPattern()
+    {
+        if (!time.isSymbolComplete())
+        {
+            return; // still on the current symbol, do nothing
+        }
+
+        // Advance to next symbol
+
+        ++currentSymbolIndex;
+
+        if (currentSymbolIndex < patternGenerator.getSizeBuffer())
+        {
+            beginSymbol(currentSymbolIndex);
+        }
+        else
+        {
+            executingPattern = false;
+        }
     }
 }
 
 void setup()
 {
+    pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, LOW); // start with pin off
+
     Serial.begin(9600);
     Serial.println("Type text and press Enter for its Morse pattern. Ctrl-Z to quit.");
 }
@@ -51,16 +89,27 @@ void loop()
         return;
     }
 
+    // Drain Serial every cycle regardless of playback state.
+    // Input is not lost if another message is playing out,
+    // but LineReady status is only acted on if executingPattern is false.
     LineStatus status = lineReader.poll();
+
+    if (status == LineStatus::Sentinel)
+    {
+        Serial.println("Exiting.");
+        halted = true;
+        return;
+    }
+
+    if (executingPattern)
+    {
+        advanceExecutingPattern();
+        return;
+    }
 
     if (status == LineStatus::LineReady)
     {
         patternGenerator.generatePattern(lineReader.getLine());
-        printPattern(patternGenerator.getBuffer(), patternGenerator.getSizeBuffer());
-    }
-    else if (status == LineStatus::Sentinel)
-    {
-        Serial.println("Exiting.");
-        halted = true;
+        beginExecutingPattern();
     }
 }
